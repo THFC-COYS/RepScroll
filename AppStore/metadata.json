@@ -1,0 +1,31 @@
+{
+  "appName": "RepScroll",
+  "subtitle": "Reps before you scroll",
+  "bundleId": "com.repscroll.app",
+  "version": "1.0.0",
+  "primaryCategory": "HEALTH_AND_FITNESS",
+  "secondaryCategory": "LIFESTYLE",
+  "keywords": ["pushups","screen time","doomscroll","fitness","habits","streak","workout","focus","digital wellbeing"],
+  "description": "RepScroll puts exercise between you and the feed.\n\nBefore Instagram, TikTok, or X opens — you earn it. Do push-ups (counted by on-device AI), squats, or plank. Build streaks. Unlock scroll time.\n\n• Vision rep counting — nothing leaves your phone\n• 15 minutes of scroll time per win (30 with Premium)\n• Streak widget on your home screen\n• Daily reminder at lights-on\n\nFree: 1 app gate per day. Premium: unlimited gates + longer unlocks.\n\nStop doomscrolling. Start moving.",
+  "promotionalText": "Do reps. Earn scroll time. Break the doomscroll loop.",
+  "subscriptions": [
+    {
+      "productId": "com.repscroll.premium.monthly",
+      "price": 6.99,
+      "duration": "P1M",
+      "freeTrial": "P1W",
+      "displayName": "RepScroll Premium Monthly"
+    },
+    {
+      "productId": "com.repscroll.premium.yearly",
+      "price": 49.00,
+      "duration": "P1Y",
+      "displayName": "RepScroll Premium Yearly"
+    }
+  ],
+  "privacy": {
+    "cameraUsage": "Counts exercise reps on-device. Video is never recorded or uploaded.",
+    "dataCollection": "None. All workout data stays on your iPhone.",
+    "encryption": false
+  }
+}

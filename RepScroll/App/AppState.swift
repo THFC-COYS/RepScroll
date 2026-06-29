@@ -5,10 +5,16 @@ import Combine
 @MainActor
 final class AppState: ObservableObject {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding = false
-    @AppStorage("dailyRepGoal") var dailyRepGoal = 10
-    @AppStorage("preferredExercise") private var preferredExerciseRaw = ExerciseType.pushUp.rawValue
-    @AppStorage("reminderHour") var reminderHour = 8
-    @AppStorage("reminderMinute") var reminderMinute = 0
+    @AppStorage("dailyRepGoal") var dailyRepGoal = AppConfig.defaultDailyRepGoal
+    @AppStorage("preferredExercise") private var preferredExerciseRaw = AppConfig.gateExercise.rawValue
+    @AppStorage("reminderHour") var reminderHour = AppConfig.defaultReminderHour
+    @AppStorage("reminderMinute") var reminderMinute = AppConfig.defaultReminderMinute
+    @AppStorage("poseSensitivity") var poseSensitivityRaw = AppConfig.defaultPoseSensitivity.rawValue
+
+    var poseSensitivity: PoseSensitivity {
+        get { PoseSensitivity(rawValue: poseSensitivityRaw) ?? AppConfig.defaultPoseSensitivity }
+        set { poseSensitivityRaw = newValue.rawValue }
+    }
     @AppStorage("remindersEnabled") var remindersEnabled = false
 
     @Published var selectedTab: AppTab = .home

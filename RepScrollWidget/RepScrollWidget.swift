@@ -24,7 +24,7 @@ struct StreakEntry: TimelineEntry {
 
 /// Reads streak data written by the main app via App Group UserDefaults.
 private enum WidgetSharedData {
-    static let appGroupID = "group.com.repscroll.shared"
+    static let appGroupID = "group.com.repscroll.shared" // matches AppConfig.appGroupIdentifier
 
     static func read() -> (streak: Int, todayReps: Int) {
         let defaults = UserDefaults(suiteName: appGroupID)

@@ -12,7 +12,15 @@ struct RepScrollApp: App {
     let persistenceController = PersistenceController.shared
 
     init() {
+        Self.applyFirstLaunchDefaults()
         configureAppearance()
+    }
+
+    private static func applyFirstLaunchDefaults() {
+        let key = "didApplyLaunchDefaults"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        UserDefaults.standard.set(AppConfig.freeUnlockMinutes, forKey: "unlockMinutes")
+        UserDefaults.standard.set(true, forKey: key)
     }
 
     var body: some Scene {

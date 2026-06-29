@@ -4,7 +4,7 @@ import StoreKit
 struct PaywallView: View {
     @EnvironmentObject private var subscriptionService: SubscriptionService
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedPlan: Plan = .yearly
+    @State private var selectedPlan: Plan = .yearly // Decision: yearly default (best value)
 
     enum Plan { case monthly, yearly }
 

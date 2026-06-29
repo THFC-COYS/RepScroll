@@ -9,7 +9,7 @@ final class ScrollUnlockService: ObservableObject {
     @Published private(set) var activeUnlocks: [String: Date] = [:]
 
     private let storageKey = "scrollUnlocks.expiry"
-    private let defaultMinutes = 15
+    private let defaultMinutes = AppConfig.freeUnlockMinutes
 
     init() {
         load()

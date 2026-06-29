@@ -44,6 +44,9 @@
 		B10000000000000000000035 /* CameraPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000039 /* CameraPermissionView.swift */; };
 		B10000000000000000000036 /* UnlockStatusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000040 /* UnlockStatusCard.swift */; };
 		B10000000000000000000037 /* WeeklyActivityChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000041 /* WeeklyActivityChart.swift */; };
+		B10000000000000000000038 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000042 /* AppConfig.swift */; };
+		B10000000000000000000039 /* ScreenTimeBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000043 /* ScreenTimeBridge.swift */; };
+		B10000000000000000000040 /* FreeTierLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000044 /* FreeTierLimiter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +115,9 @@
 		F10000000000000000000039 /* CameraPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPermissionView.swift; sourceTree = "<group>"; };
 		F10000000000000000000040 /* UnlockStatusCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnlockStatusCard.swift; sourceTree = "<group>"; };
 		F10000000000000000000041 /* WeeklyActivityChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyActivityChart.swift; sourceTree = "<group>"; };
+		F10000000000000000000042 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		F10000000000000000000043 /* ScreenTimeBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeBridge.swift; sourceTree = "<group>"; };
+		F10000000000000000000044 /* FreeTierLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeTierLimiter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -231,6 +237,8 @@
 				F10000000000000000000023 /* NotificationService.swift */,
 				F10000000000000000000024 /* BlockedAppsService.swift */,
 				F10000000000000000000038 /* ScrollUnlockService.swift */,
+				F10000000000000000000043 /* ScreenTimeBridge.swift */,
+				F10000000000000000000044 /* FreeTierLimiter.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -249,6 +257,7 @@
 			children = (
 				F10000000000000000000027 /* RepScrollTheme.swift */,
 				F10000000000000000000028 /* WidgetDataStore.swift */,
+				F10000000000000000000042 /* AppConfig.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -416,6 +425,9 @@
 				B10000000000000000000035 /* CameraPermissionView.swift in Sources */,
 				B10000000000000000000036 /* UnlockStatusCard.swift in Sources */,
 				B10000000000000000000037 /* WeeklyActivityChart.swift in Sources */,
+				B10000000000000000000038 /* AppConfig.swift in Sources */,
+				B10000000000000000000039 /* ScreenTimeBridge.swift in Sources */,
+				B10000000000000000000040 /* FreeTierLimiter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

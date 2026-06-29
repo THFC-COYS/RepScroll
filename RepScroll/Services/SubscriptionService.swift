@@ -4,8 +4,8 @@ import os
 /// StoreKit 2 subscription manager — $6.99/mo and $49/yr tiers.
 @MainActor
 final class SubscriptionService: ObservableObject {
-    static let monthlyProductID = "com.repscroll.premium.monthly"
-    static let yearlyProductID = "com.repscroll.premium.yearly"
+    static let monthlyProductID = AppConfig.monthlyProductID
+    static let yearlyProductID = AppConfig.yearlyProductID
 
     @Published private(set) var products: [Product] = []
     @Published private(set) var purchasedProductIDs: Set<String> = []

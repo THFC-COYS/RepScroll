@@ -44,8 +44,8 @@ final class NotificationService: ObservableObject {
         dateComponents.minute = minute
 
         let content = UNMutableNotificationContent()
-        content.title = "RepScroll"
-        content.body = "10 push-ups before the scroll. Your streak is waiting."
+        content.title = AppConfig.reminderTitle
+        content.body = AppConfig.reminderBody
         content.sound = .default
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)

@@ -33,6 +33,10 @@ struct ChallengeView: View {
             .navigationTitle("Challenge")
             .onAppear {
                 viewModel.configure(exercise: appState.preferredExercise, repGoal: appState.dailyRepGoal)
+                viewModel.poseDetection.applySensitivity(appState.poseSensitivity)
+            }
+            .onChange(of: appState.poseSensitivity) { _, level in
+                viewModel.poseDetection.applySensitivity(level)
             }
             .onDisappear { viewModel.cleanup() }
         }

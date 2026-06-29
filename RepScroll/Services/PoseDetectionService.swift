@@ -26,11 +26,17 @@ final class PoseDetectionService: NSObject, ObservableObject {
     private var plankGoalNotified = false
     private let logger = Logger(subsystem: "com.repscroll.app", category: "PoseDetection")
 
-    private let repCooldown: TimeInterval = 0.55
-    private let downAngleThreshold: CGFloat = 95
-    private let upAngleThreshold: CGFloat = 155
-    private let squatDownKnee: CGFloat = 105
-    private let squatUpKnee: CGFloat = 155
+    private var sensitivity: PoseSensitivity = AppConfig.defaultPoseSensitivity
+    private var repCooldown: TimeInterval { AppConfig.repCooldownSeconds }
+    private var downAngleThreshold: CGFloat { sensitivity.pushUpDownAngle }
+    private var upAngleThreshold: CGFloat { sensitivity.pushUpUpAngle }
+    private var squatDownKnee: CGFloat { sensitivity.squatDownKnee }
+    private var squatUpKnee: CGFloat { sensitivity.squatUpKnee }
+    private var plankTolerance: CGFloat { sensitivity.plankAlignmentTolerance }
+
+    func applySensitivity(_ level: PoseSensitivity) {
+        sensitivity = level
+    }
 
     func reset() {
         repCount = 0
@@ -182,7 +188,7 @@ final class PoseDetectionService: NSObject, ObservableObject {
         let ankleY = averageY(points, [.leftAnkle, .rightAnkle])
         let deviation = abs((shoulderY + ankleY) / 2 - hipY)
 
-        if deviation < 0.06 {
+        if deviation < plankTolerance {
             phase = .holding
             tickPlank(active: true)
             feedbackMessage = "Solid plank — \(plankHoldSeconds)s"

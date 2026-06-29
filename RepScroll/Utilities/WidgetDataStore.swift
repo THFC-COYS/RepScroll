@@ -2,7 +2,7 @@ import Foundation
 
 /// App Group bridge for Widget extension streak data.
 enum WidgetDataStore {
-    static let appGroupID = "group.com.repscroll.shared"
+    static let appGroupID = AppConfig.appGroupIdentifier
     static let streakKey = "widget.currentStreak"
     static let todayRepsKey = "widget.todayReps"
 

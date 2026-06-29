@@ -24,7 +24,7 @@ final class BlockedAppsService: ObservableObject {
             enabledApps = Set(saved)
         } else {
             // Default: Instagram + TikTok enabled for demo
-            enabledApps = Set(["instagram", "tiktok"])
+            enabledApps = AppConfig.defaultBlockedAppIDs
         }
     }
 
@@ -47,22 +47,7 @@ final class BlockedAppsService: ObservableObject {
         }
     }
 
-    /// Simulates Screen Time intercept — production replaces with extension callback.
-    func shouldChallengeBeforeOpening(app: BlockedApp, isPremium: Bool) -> Bool {
-        guard enabledApps.contains(app.id) else { return false }
-        // Free users get 1 gate/day; premium unlimited (placeholder logic)
-        if isPremium { return true }
-        let lastGate = UserDefaults.standard.object(forKey: "lastGateDate") as? Date
-        let today = Calendar.current.startOfDay(for: Date())
-        if let lastGate, Calendar.current.startOfDay(for: lastGate) == today {
-            return false
-        }
-        return true
-    }
-
-    func recordGateUnlock() {
-        UserDefaults.standard.set(Date(), forKey: "lastGateDate")
-    }
+    var usesSimulation: Bool { ScreenTimeBridge.isSimulation }
 
     private func persistEnabledApps() {
         UserDefaults.standard.set(Array(enabledApps), forKey: storageKey)

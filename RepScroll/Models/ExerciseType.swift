@@ -43,9 +43,9 @@ enum ExerciseType: String, CaseIterable, Codable, Identifiable {
 
     var defaultGoal: Int {
         switch self {
-        case .pushUp: 10
-        case .squat: 15
-        case .plank: 60 // seconds
+        case .pushUp: AppConfig.defaultDailyRepGoal
+        case .squat: AppConfig.defaultSquatGoal
+        case .plank: AppConfig.defaultPlankGoalSeconds
         }
     }
 }

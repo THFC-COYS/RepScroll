@@ -46,7 +46,11 @@ struct HomeView: View {
                     .foregroundStyle(RepScrollTheme.textSecondary)
             }
             Spacer()
-            if subscriptionService.isPremium {
+            if !subscriptionService.isPremium {
+                Text("\(FreeTierLimiter.gatesRemainingToday(isPremium: false)) gate left today")
+                    .font(.caption2)
+                    .foregroundStyle(RepScrollTheme.textSecondary)
+            } else {
                 Label("Pro", systemImage: "crown.fill")
                     .font(.caption.weight(.bold))
                     .padding(.horizontal, 10)

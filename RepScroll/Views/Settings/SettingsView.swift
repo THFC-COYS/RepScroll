@@ -4,6 +4,7 @@ struct SettingsView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var subscriptionService: SubscriptionService
     @EnvironmentObject private var notificationService: NotificationService
+    @EnvironmentObject private var appState: AppState
     @StateObject private var blockedApps = BlockedAppsService()
     @AppStorage("unlockMinutes") private var unlockMinutes = 15
 
@@ -21,6 +22,17 @@ struct SettingsView: View {
                     }
                     Button("Restore purchases") {
                         Task { await subscriptionService.restorePurchases() }
+                    }
+                }
+
+                Section("Pose detection") {
+                    Picker("Sensitivity", selection: Binding(
+                        get: { appState.poseSensitivity },
+                        set: { appState.poseSensitivity = $0 }
+                    )) {
+                        ForEach(PoseSensitivity.allCases) { level in
+                            Text(level.displayName).tag(level)
+                        }
                     }
                 }
 
@@ -75,7 +87,8 @@ struct SettingsView: View {
                 Section("Privacy") {
                     Label("Camera stays on-device", systemImage: "eye.slash.fill")
                     Label("Pose data never uploaded", systemImage: "icloud.slash.fill")
-                    Link("Privacy Policy", destination: URL(string: "https://repscroll.app/privacy")!)
+                    Link("Privacy Policy", destination: URL(string: AppConfig.privacyPolicyURL)!)
+                    Link("Terms of Use", destination: URL(string: AppConfig.termsURL)!)
                 }
 
                 Section("About") {
