@@ -1,6 +1,7 @@
 import AVFoundation
 import Vision
 import Combine
+import UIKit
 import os
 
 /// On-device pose engine for push-ups, squats, and plank hold detection.
@@ -17,7 +18,7 @@ final class PoseDetectionService: NSObject, ObservableObject {
     @Published var targetReps = 10
     @Published var exerciseMode: ExerciseType = .pushUp
 
-    private let sequenceHandler = VNSequenceRequestHandler()
+    nonisolated(unsafe) private let sequenceHandler = VNSequenceRequestHandler()
     private var lastPhase: Phase = .unknown
     private var downConfirmed = false
     private var lastRepDate: Date?

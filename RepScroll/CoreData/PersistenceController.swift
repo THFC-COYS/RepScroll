@@ -1,7 +1,8 @@
-import CoreData
+@preconcurrency import CoreData
 import os
 
 /// Core Data stack with in-memory option for SwiftUI previews and tests.
+@MainActor
 final class PersistenceController {
     static let shared = PersistenceController()
     static let preview = PersistenceController(inMemory: true)

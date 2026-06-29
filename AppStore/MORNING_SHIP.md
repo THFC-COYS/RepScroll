@@ -4,6 +4,7 @@
 
 ## Before you archive (15 min)
 
+0. **Build fails?** Run `./scripts/fix-xcode-simulator.sh` then pick **iPhone 17 Pro** simulator (or a physical iPhone).
 1. **Apple Developer account** signed in (Xcode → Settings → Accounts).
 2. **Create App ID** `com.repscroll.app` + App Group `group.com.repscroll.shared`.
 3. **Enable GitHub Pages** on repo → Settings → Pages → source: `main` / folder: `/docs`  

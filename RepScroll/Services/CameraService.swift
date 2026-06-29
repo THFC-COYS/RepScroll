@@ -3,6 +3,7 @@ import Combine
 import os
 
 /// Manages AVCaptureSession lifecycle, permissions, and frame delivery to pose detection.
+@MainActor
 final class CameraService: NSObject, ObservableObject {
     @Published private(set) var authorizationStatus: AVAuthorizationStatus = .notDetermined
     @Published private(set) var isRunning = false
@@ -13,7 +14,7 @@ final class CameraService: NSObject, ObservableObject {
     private let sessionQueue = DispatchQueue(label: "com.repscroll.camera.session")
     private let logger = Logger(subsystem: "com.repscroll.app", category: "Camera")
 
-    var onFrame: ((CMSampleBuffer, CGImagePropertyOrientation) -> Void)?
+    nonisolated(unsafe) var onFrame: ((CMSampleBuffer, CGImagePropertyOrientation) -> Void)?
 
     override init() {
         super.init()
