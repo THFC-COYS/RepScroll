@@ -1,0 +1,15 @@
+{
+  "recommendedAge": "4+",
+  "questionnaire": {
+    "cartoonOrFantasyViolence": "NONE",
+    "realisticViolence": "NONE",
+    "sexualContentOrNudity": "NONE",
+    "profanityOrCrudeHumor": "NONE",
+    "alcoholTobaccoOrDrugs": "NONE",
+    "matureOrSuggestiveThemes": "NONE",
+    "horrorOrFearThemes": "NONE",
+    "gambling": "NONE",
+    "unrestrictedWebAccess": false,
+    "madeForKids": false
+  }
+}

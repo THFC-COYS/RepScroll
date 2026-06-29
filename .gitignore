@@ -1,6 +1,7 @@
 # Xcode
 build/
 DerivedData/
+AppStore/screenshots/*.png
 *.xcuserstate
 *.xcscmblueprint
 xcuserdata/

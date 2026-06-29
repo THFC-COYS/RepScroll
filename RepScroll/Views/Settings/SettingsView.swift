@@ -97,6 +97,8 @@ struct SettingsView: View {
                         Text(AppConfig.appVersion)
                             .foregroundStyle(RepScrollTheme.textSecondary)
                     }
+                    Link("Support & feedback", destination: URL(string: AppConfig.supportURL)!)
+                    Link("Email support", destination: URL(string: "mailto:\(AppConfig.supportEmail)")!)
                     Button("Replay onboarding") {
                         appState.hasCompletedOnboarding = false
                     }

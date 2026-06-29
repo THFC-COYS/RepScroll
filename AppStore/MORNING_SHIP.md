@@ -19,8 +19,13 @@
    - `com.repscroll.premium.monthly` — $6.99, 1 week free trial
    - `com.repscroll.premium.yearly` — $49.00
 6. **Metadata** — copy from `AppStore/metadata.json` into ASC fields.
-7. **Screenshots** — capture on iPhone 6.7" (15 Pro Max): Home, Challenge (camera), Gate, History, Paywall.
+   - What's New: `AppStore/whats-new.txt`
+   - Privacy answers: `AppStore/privacy-nutrition.json`
+   - Age rating: `AppStore/age-rating.json`
+   - Subscriptions: `AppStore/subscriptions-asc.json`
+7. **Screenshots** — placeholder frames in `AppStore/screenshots/` (run `python3 scripts/generate_screenshot_frames.py`). Replace with real device captures before submit: Home, Challenge, Gate, History, Paywall (6.7" + 6.5").
 8. **Age rating** — 4+, no mature content. Encryption: No (already in Info.plist).
+9. **Preflight** — `DEVELOPMENT_TEAM=XXX ./scripts/preflight.sh` before archive.
 
 ## Archive & upload
 

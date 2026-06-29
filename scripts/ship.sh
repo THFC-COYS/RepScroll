@@ -14,6 +14,10 @@ if [[ -z "$TEAM_ID" ]]; then
   exit 1
 fi
 
+if [[ "${1:-}" != "--skip-preflight" ]]; then
+  DEVELOPMENT_TEAM="$TEAM_ID" "$ROOT/scripts/preflight.sh"
+fi
+
 SCHEME="RepScroll"
 ARCHIVE_PATH="$ROOT/build/RepScroll.xcarchive"
 EXPORT_DIR="$ROOT/build/export"

@@ -17,6 +17,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     header
+                    if AppConfig.screenTimeIntegration == .simulation { simulationBanner }
                     if dailyGoalMet { dailyGoalBanner }
                     streakCard
                     ShareStreakButton(streak: viewModel.repository.stats.currentStreak, todayReps: viewModel.repository.stats.todayReps)
@@ -206,6 +207,18 @@ struct HomeView: View {
         case 12..<17: return "Good afternoon"
         default: return "Good evening"
         }
+    }
+
+    private var simulationBanner: some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: "info.circle.fill")
+                .foregroundStyle(RepScrollTheme.accentSecondary)
+            Text("v1.0 preview — tap a protected app below to try the gate flow. System-level blocking comes in v1.1.")
+                .font(.caption)
+                .foregroundStyle(RepScrollTheme.textSecondary)
+        }
+        .foregroundStyle(RepScrollTheme.textPrimary)
+        .repScrollCard()
     }
 
     private var dailyGoalMet: Bool {

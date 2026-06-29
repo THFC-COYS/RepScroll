@@ -1,0 +1,21 @@
+{
+  "dataNotCollected": true,
+  "answersForAppStoreConnect": {
+    "contactInfo": { "collected": false },
+    "healthAndFitness": { "collected": false, "note": "Workout data stored locally only; not transmitted" },
+    "financialInfo": { "collected": false, "note": "Payments handled by Apple" },
+    "location": { "collected": false },
+    "sensitiveInfo": { "collected": false },
+    "contacts": { "collected": false },
+    "userContent": { "collected": false, "note": "Camera frames processed in real time; never stored" },
+    "browsingHistory": { "collected": false },
+    "searchHistory": { "collected": false },
+    "identifiers": { "collected": false },
+    "purchases": { "collected": false, "note": "Apple manages subscription state via StoreKit" },
+    "usageData": { "collected": false },
+    "diagnostics": { "collected": false },
+    "tracking": false,
+    "linkedToUser": false,
+    "usedForTracking": false
+  }
+}

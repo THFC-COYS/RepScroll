@@ -1,0 +1,29 @@
+{
+  "subscriptionGroup": {
+    "name": "RepScroll Premium",
+    "referenceName": "repscroll_premium"
+  },
+  "subscriptions": [
+    {
+      "productId": "com.repscroll.premium.monthly",
+      "referenceName": "Monthly",
+      "duration": "1 month",
+      "priceUSD": 6.99,
+      "freeTrial": "1 week",
+      "displayName": "Monthly",
+      "description": "Unlimited app gate challenges, 30-minute unlock windows, and full access to all exercises.",
+      "reviewNotes": "Auto-renewable. 7-day free trial for new subscribers. Restore via Settings or Paywall."
+    },
+    {
+      "productId": "com.repscroll.premium.yearly",
+      "referenceName": "Yearly",
+      "duration": "1 year",
+      "priceUSD": 49.00,
+      "freeTrial": null,
+      "displayName": "Yearly",
+      "description": "Best value — unlimited gates, 30-minute unlocks, and premium features for a full year.",
+      "reviewNotes": "Auto-renewable yearly plan. No free trial on yearly."
+    }
+  ],
+  "reviewScreenshot": "Capture Paywall screen showing both plans and Restore purchases button."
+}
