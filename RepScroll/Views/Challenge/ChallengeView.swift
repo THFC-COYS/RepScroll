@@ -2,7 +2,9 @@ import SwiftUI
 
 struct ChallengeView: View {
     @EnvironmentObject private var appState: AppState
+    @Environment(\.managedObjectContext) private var context
     @StateObject private var viewModel: ChallengeViewModel
+    @StateObject private var statsRepo: WorkoutRepository
 
     init() {
         let ctx = PersistenceController.shared.container.viewContext
@@ -11,6 +13,7 @@ struct ChallengeView: View {
             exercise: .pushUp,
             repGoal: 10
         ))
+        _statsRepo = StateObject(wrappedValue: WorkoutRepository(context: ctx))
     }
 
     var body: some View {
@@ -32,19 +35,28 @@ struct ChallengeView: View {
             }
             .navigationTitle("Challenge")
             .onAppear {
+                statsRepo.refresh()
                 viewModel.configure(exercise: appState.preferredExercise, repGoal: appState.dailyRepGoal)
                 viewModel.poseDetection.applySensitivity(appState.poseSensitivity)
+                if UserDefaults.standard.bool(forKey: "shortcut.startChallenge") {
+                    UserDefaults.standard.set(false, forKey: "shortcut.startChallenge")
+                    Task { await viewModel.startSession() }
+                }
             }
             .onChange(of: appState.poseSensitivity) { _, level in
                 viewModel.poseDetection.applySensitivity(level)
             }
             .onDisappear { viewModel.cleanup() }
+            .onReceive(NotificationCenter.default.publisher(for: .repScrollSessionCompleted)) { _ in
+                statsRepo.refresh()
+            }
         }
     }
 
     private var setupView: some View {
         ScrollView {
             VStack(spacing: 20) {
+                DailyGoalRing(todayReps: statsRepo.stats.todayReps, goal: appState.dailyRepGoal)
                 exercisePicker
                 goalStepper
                 instructionCard

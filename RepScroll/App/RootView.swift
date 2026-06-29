@@ -6,14 +6,22 @@ struct RootView: View {
     @EnvironmentObject private var subscriptionService: SubscriptionService
 
     var body: some View {
-        Group {
-            if appState.hasCompletedOnboarding {
-                MainTabView()
-            } else {
-                OnboardingView()
+        ZStack(alignment: .top) {
+            Group {
+                if appState.hasCompletedOnboarding {
+                    MainTabView()
+                } else {
+                    OnboardingView()
+                }
+            }
+            .animation(.easeInOut(duration: 0.35), value: appState.hasCompletedOnboarding)
+
+            if let achievement = appState.pendingAchievement, appState.showAchievementToast {
+                AchievementToast(achievement: achievement, isShowing: $appState.showAchievementToast)
+                    .padding(.top, 8)
+                    .zIndex(100)
             }
         }
-        .animation(.easeInOut(duration: 0.35), value: appState.hasCompletedOnboarding)
         .sheet(isPresented: $appState.showPaywall) {
             PaywallView()
         }

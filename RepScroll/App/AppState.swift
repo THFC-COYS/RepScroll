@@ -21,6 +21,8 @@ final class AppState: ObservableObject {
     @Published var showPaywall = false
     @Published var showBlockedGate = false
     @Published var pendingBlockedApp: BlockedApp?
+    @Published var pendingAchievement: Achievement?
+    @Published var showAchievementToast = false
 
     var preferredExercise: ExerciseType {
         get { ExerciseType(rawValue: preferredExerciseRaw) ?? .pushUp }

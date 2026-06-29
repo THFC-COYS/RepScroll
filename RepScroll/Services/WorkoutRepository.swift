@@ -65,6 +65,20 @@ final class WorkoutRepository: ObservableObject {
         PersistenceController.shared.save(context: context)
         refresh()
 
+        if wasGateUnlock {
+            AchievementTracker.recordGateUnlock()
+        }
+
+        let newAchievements = AchievementTracker.evaluate(streak: stats.currentStreak, totalReps: stats.totalReps)
+        if let first = newAchievements.first {
+            NotificationCenter.default.post(
+                name: .repScrollAchievementUnlocked,
+                object: nil,
+                userInfo: ["achievementId": first.id]
+            )
+        }
+        ReviewPromptService.considerPrompt(streak: stats.currentStreak, totalSessions: stats.totalSessions)
+
         return WorkoutSummary(
             id: entity.id ?? UUID(),
             exercise: exercise,

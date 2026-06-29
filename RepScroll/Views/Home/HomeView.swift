@@ -17,8 +17,11 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     header
+                    if dailyGoalMet { dailyGoalBanner }
                     streakCard
+                    ShareStreakButton(streak: viewModel.repository.stats.currentStreak, todayReps: viewModel.repository.stats.todayReps)
                     UnlockStatusCard(unlockService: unlockService, blockedApps: viewModel.blockedAppsService.activeBlockedApps)
+                    AchievementsGrid(streak: viewModel.repository.stats.currentStreak, totalReps: viewModel.repository.stats.totalReps)
                     quickStart
                     blockedAppsSection
                     premiumBanner
@@ -28,6 +31,15 @@ struct HomeView: View {
             .background(RepScrollTheme.background)
             .navigationTitle("RepScroll")
             .onAppear { viewModel.refresh() }
+            .onReceive(NotificationCenter.default.publisher(for: .repScrollSessionCompleted)) { _ in
+                viewModel.refresh()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .repScrollAchievementUnlocked)) { note in
+                guard let id = note.userInfo?["achievementId"] as? String,
+                      let achievement = Achievement.catalog.first(where: { $0.id == id }) else { return }
+                appState.pendingAchievement = achievement
+                appState.showAchievementToast = true
+            }
             .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
                 tick = Date()
                 unlockService.pruneExpired()
@@ -194,6 +206,27 @@ struct HomeView: View {
         case 12..<17: return "Good afternoon"
         default: return "Good evening"
         }
+    }
+
+    private var dailyGoalMet: Bool {
+        viewModel.repository.stats.todayReps >= appState.dailyRepGoal
+    }
+
+    private var dailyGoalBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.seal.fill")
+                .foregroundStyle(RepScrollTheme.success)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Daily goal crushed")
+                    .font(.subheadline.weight(.semibold))
+                Text("You hit \(appState.dailyRepGoal) reps today. Earn scroll time or stack more.")
+                    .font(.caption)
+                    .foregroundStyle(RepScrollTheme.textSecondary)
+            }
+            Spacer()
+        }
+        .foregroundStyle(RepScrollTheme.textPrimary)
+        .repScrollCard()
     }
 
     private var motivationalLine: String {

@@ -40,5 +40,16 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.repscroll.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>repscroll</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

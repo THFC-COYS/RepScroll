@@ -4,7 +4,6 @@ struct SettingsView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var subscriptionService: SubscriptionService
     @EnvironmentObject private var notificationService: NotificationService
-    @EnvironmentObject private var appState: AppState
     @StateObject private var blockedApps = BlockedAppsService()
     @AppStorage("unlockMinutes") private var unlockMinutes = 15
 

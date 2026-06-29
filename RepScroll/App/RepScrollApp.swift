@@ -36,6 +36,15 @@ struct RepScrollApp: App {
                     await subscriptionService.loadProducts()
                     await subscriptionService.refreshEntitlements()
                 }
+                .onOpenURL { url in
+                    guard let dest = DeepLinkRouter.parse(url: url) else { return }
+                    DeepLinkRouter.route(dest, appState: appState, blockedApps: BlockedAppsService())
+                }
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+                    guard let url = activity.webpageURL,
+                          let dest = DeepLinkRouter.parse(url: url) else { return }
+                    DeepLinkRouter.route(dest, appState: appState, blockedApps: BlockedAppsService())
+                }
         }
     }
 

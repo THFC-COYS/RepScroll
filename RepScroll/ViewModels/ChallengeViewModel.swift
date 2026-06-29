@@ -99,6 +99,7 @@ final class ChallengeViewModel: ObservableObject {
             blockedAppName: blockedAppName
         )
         showCompletion = true
+        NotificationCenter.default.post(name: .repScrollSessionCompleted, object: nil)
     }
 
     func cleanup() {

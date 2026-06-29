@@ -22,6 +22,9 @@ struct HistoryView: View {
             .background(RepScrollTheme.background)
             .navigationTitle("History")
             .onAppear { repository.refresh() }
+            .onReceive(NotificationCenter.default.publisher(for: .repScrollSessionCompleted)) { _ in
+                repository.refresh()
+            }
         }
     }
 

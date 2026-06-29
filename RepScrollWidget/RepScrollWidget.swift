@@ -76,11 +76,17 @@ struct StreakWidgetView: View {
             Text("\(entry.streak)")
                 .font(.system(size: 44, weight: .bold, design: .rounded))
                 .foregroundStyle(RepScrollWidgetTheme.textPrimary)
-            Text("day streak")
+            Text(entry.streak > 0 ? "day streak" : "start today")
                 .font(.caption)
                 .foregroundStyle(RepScrollWidgetTheme.textSecondary)
+            if entry.todayReps > 0 {
+                Text("\(entry.todayReps) reps")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(RepScrollWidgetTheme.accent)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .widgetURL(URL(string: "repscroll://challenge"))
     }
 
     private var mediumLayout: some View {
@@ -104,6 +110,7 @@ struct StreakWidgetView: View {
             }
         }
         .padding(.horizontal, 4)
+        .widgetURL(URL(string: "repscroll://challenge"))
     }
 }
 
