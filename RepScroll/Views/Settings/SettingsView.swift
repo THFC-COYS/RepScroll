@@ -94,7 +94,7 @@ struct SettingsView: View {
                     HStack {
                         Text("Version")
                         Spacer()
-                        Text("1.0.0")
+                        Text(AppConfig.appVersion)
                             .foregroundStyle(RepScrollTheme.textSecondary)
                     }
                     Button("Replay onboarding") {

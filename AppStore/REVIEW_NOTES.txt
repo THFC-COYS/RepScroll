@@ -1,0 +1,45 @@
+RepScroll v1.0.0 — App Review notes
+====================================
+
+HOW TO TEST (5 minutes)
+-----------------------
+1. Complete onboarding (5 screens). On "Pick your temptations", leave Instagram/TikTok/X enabled.
+2. Home tab → tap Instagram under "Protected apps" → gate appears.
+3. Tap "Earn your scroll" → allow camera → do push-ups (or hold phone and bend arms) until 10 reps.
+4. Tap "Unlock Instagram" → app shows unlocked state with countdown timer.
+5. Challenge tab → start a workout with front camera for squat/plank testing.
+6. Settings → toggle daily reminder (optional notification permission).
+
+SCREEN TIME / APP BLOCKING
+--------------------------
+v1.0 uses in-app simulation: tapping a "protected app" on Home opens RepScroll's gate flow.
+Real iOS Screen Time / FamilyControls blocking is planned for v1.1.
+Copy in Settings and Terms discloses this.
+
+SUBSCRIPTIONS (StoreKit 2)
+--------------------------
+Product IDs (must exist in App Store Connect):
+  • com.repscroll.premium.monthly — $6.99/mo, 7-day free trial
+  • com.repscroll.premium.yearly  — $49.00/yr
+
+Premium unlocks: unlimited gate challenges/day, 30-min unlock windows (vs 15 min free).
+Restore purchases: Settings → Restore purchases, or Paywall → Restore purchases.
+
+Free tier: 1 gate challenge per day.
+
+CAMERA
+------
+Front camera only. On-device Vision pose detection. No recording, no upload, no network calls for video.
+
+ACCOUNT
+-------
+No login required. All data local (Core Data + UserDefaults).
+
+DEMO ACCOUNT
+------------
+Not applicable — no server authentication.
+
+SUPPORT
+-------
+support@repscroll.app
+https://github.com/THFC-COYS/RepScroll/issues

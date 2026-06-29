@@ -8,6 +8,11 @@
   "keywords": ["pushups","screen time","doomscroll","fitness","habits","streak","workout","focus","digital wellbeing"],
   "description": "RepScroll puts exercise between you and the feed.\n\nBefore Instagram, TikTok, or X opens — you earn it. Do push-ups (counted by on-device AI), squats, or plank. Build streaks. Unlock scroll time.\n\n• Vision rep counting — nothing leaves your phone\n• 15 minutes of scroll time per win (30 with Premium)\n• Streak widget on your home screen\n• Daily reminder at lights-on\n\nFree: 1 app gate per day. Premium: unlimited gates + longer unlocks.\n\nStop doomscrolling. Start moving.",
   "promotionalText": "Do reps. Earn scroll time. Break the doomscroll loop.",
+  "supportURL": "https://github.com/THFC-COYS/RepScroll/issues",
+  "privacyPolicyURL": "https://thfc-coys.github.io/RepScroll/privacy.html",
+  "termsURL": "https://thfc-coys.github.io/RepScroll/terms.html",
+  "copyright": "© 2026 RepScroll",
+  "ageRating": "4+",
   "subscriptions": [
     {
       "productId": "com.repscroll.premium.monthly",

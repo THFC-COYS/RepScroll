@@ -58,9 +58,9 @@ struct PaywallView: View {
     private var features: some View {
         VStack(alignment: .leading, spacing: 14) {
             featureRow("lock.shield.fill", "Unlimited blocked-app challenges")
-            featureRow("camera.fill", "Squat & plank AI counting (coming)")
+            featureRow("camera.fill", "Push-ups, squats & plank — on-device AI")
+            featureRow("clock.fill", "30-minute unlock windows (vs 15 free)")
             featureRow("rectangle.grid.2x2.fill", "Home screen streak widget")
-            featureRow("bell.badge.fill", "Smart reminder scheduling")
         }
         .repScrollCard()
     }
@@ -95,11 +95,11 @@ struct PaywallView: View {
                     plan: .monthly,
                     title: "Monthly",
                     price: monthly.displayPrice,
-                    subtitle: "Cancel anytime",
-                    badge: nil
+                    subtitle: "7-day free trial · cancel anytime",
+                    badge: "FREE TRIAL"
                 )
             } else {
-                placeholderPlan(title: "Monthly", price: "$6.99/mo", subtitle: "Cancel anytime")
+                placeholderPlan(title: "Monthly", price: "$6.99/mo", subtitle: "7-day free trial")
             }
         }
     }
@@ -175,7 +175,7 @@ struct PaywallView: View {
                 if subscriptionService.isLoading {
                     ProgressView().tint(.white)
                 } else {
-                    Text("Start free trial")
+                    Text(purchaseButtonTitle)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -192,11 +192,23 @@ struct PaywallView: View {
         .foregroundStyle(RepScrollTheme.textSecondary)
     }
 
+    private var purchaseButtonTitle: String {
+        selectedPlan == .monthly ? "Start 7-day free trial" : "Subscribe yearly"
+    }
+
     private var legal: some View {
-        Text("Payment charged to Apple ID. Subscriptions auto-renew unless cancelled 24h before period end. Manage in Settings → Apple ID → Subscriptions.")
+        VStack(spacing: 8) {
+            Text("Payment charged to Apple ID. Subscriptions auto-renew unless cancelled 24h before period end. Manage in Settings → Apple ID → Subscriptions.")
+                .font(.caption2)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(RepScrollTheme.textSecondary.opacity(0.7))
+
+            HStack(spacing: 16) {
+                Link("Privacy Policy", destination: URL(string: AppConfig.privacyPolicyURL)!)
+                Link("Terms of Use", destination: URL(string: AppConfig.termsURL)!)
+            }
             .font(.caption2)
-            .multilineTextAlignment(.center)
-            .foregroundStyle(RepScrollTheme.textSecondary.opacity(0.7))
-            .padding(.bottom, 20)
+        }
+        .padding(.bottom, 20)
     }
 }

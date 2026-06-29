@@ -24,6 +24,10 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>RepScroll uses your camera to count push-up reps with on-device pose detection. Video never leaves your phone.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>RepScroll can send a daily reminder to do reps before you scroll. You can turn this off anytime in Settings.</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.healthcare-fitness</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
