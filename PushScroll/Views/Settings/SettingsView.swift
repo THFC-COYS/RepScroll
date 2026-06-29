@@ -1,0 +1,116 @@
+import SwiftUI
+
+struct SettingsView: View {
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var subscriptionService: SubscriptionService
+    @EnvironmentObject private var notificationService: NotificationService
+    @StateObject private var blockedApps = BlockedAppsService()
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Subscription") {
+                    if subscriptionService.isPremium {
+                        Label("Premium active", systemImage: "crown.fill")
+                            .foregroundStyle(PushScrollTheme.accentSecondary)
+                    } else {
+                        Button("Upgrade to Premium") {
+                            appState.showPaywall = true
+                        }
+                    }
+                    Button("Restore purchases") {
+                        Task { await subscriptionService.restorePurchases() }
+                    }
+                }
+
+                Section("Daily goal") {
+                    Picker("Exercise", selection: Binding(
+                        get: { appState.preferredExercise },
+                        set: { appState.preferredExercise = $0 }
+                    )) {
+                        ForEach(ExerciseType.allCases) { type in
+                            Text(type.displayName).tag(type)
+                        }
+                    }
+                    Stepper("Goal: \(appState.dailyRepGoal)", value: $appState.dailyRepGoal, in: 5...50, step: 5)
+                }
+
+                Section("Reminders") {
+                    Toggle("Daily reminder", isOn: $appState.remindersEnabled)
+                        .onChange(of: appState.remindersEnabled) { _, enabled in
+                            Task {
+                                await notificationService.scheduleDailyReminder(
+                                    hour: appState.reminderHour,
+                                    minute: appState.reminderMinute,
+                                    enabled: enabled
+                                )
+                            }
+                        }
+                    if appState.remindersEnabled {
+                        DatePicker(
+                            "Time",
+                            selection: reminderDateBinding,
+                            displayedComponents: .hourAndMinute
+                        )
+                    }
+                }
+
+                Section("Blocked apps") {
+                    ForEach(blockedApps.allApps) { app in
+                        Toggle(app.name, isOn: Binding(
+                            get: { blockedApps.enabledApps.contains(app.id) },
+                            set: { _ in blockedApps.toggle(app) }
+                        ))
+                    }
+                    Text("Screen Time API integration expands this to real system-level blocking.")
+                        .font(.caption)
+                        .foregroundStyle(PushScrollTheme.textSecondary)
+                }
+
+                Section("Privacy") {
+                    Label("Camera stays on-device", systemImage: "eye.slash.fill")
+                    Label("Pose data never uploaded", systemImage: "icloud.slash.fill")
+                    Link("Privacy Policy", destination: URL(string: "https://pushscroll.app/privacy")!)
+                }
+
+                Section("About") {
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text("1.0.0")
+                            .foregroundStyle(PushScrollTheme.textSecondary)
+                    }
+                    Button("Replay onboarding") {
+                        appState.hasCompletedOnboarding = false
+                    }
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(PushScrollTheme.background)
+            .navigationTitle("Settings")
+        }
+    }
+
+    private var reminderDateBinding: Binding<Date> {
+        Binding(
+            get: {
+                var components = DateComponents()
+                components.hour = appState.reminderHour
+                components.minute = appState.reminderMinute
+                return Calendar.current.date(from: components) ?? Date()
+            },
+            set: { date in
+                let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
+                appState.reminderHour = parts.hour ?? 8
+                appState.reminderMinute = parts.minute ?? 0
+                Task {
+                    await notificationService.scheduleDailyReminder(
+                        hour: appState.reminderHour,
+                        minute: appState.reminderMinute,
+                        enabled: appState.remindersEnabled
+                    )
+                }
+            }
+        )
+    }
+}
