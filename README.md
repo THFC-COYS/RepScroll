@@ -1,63 +1,61 @@
 # RepScroll
 
-**Exercise before you scroll.** RepScroll forces a quick burst of movement — push-ups, squats, or plank — before opening blocked social apps.
+**Reps before scroll.** An iOS app that gates social media behind quick exercise — push-ups, squats, or plank — with on-device Vision rep counting.
 
-Built with **SwiftUI**, **Swift 6**, **iOS 18+**, **Vision** pose detection, **Core Data**, and **StoreKit 2**.
+SwiftUI · Swift 6 · iOS 18+ · Core Data · StoreKit 2 · WidgetKit
 
-## Features
+## MVP feature set
 
-- **Onboarding** — value prop, camera explanation, streaks, optional daily reminders
-- **Home dashboard** — animated streak ring, today's reps, quick challenge launch
-- **Challenge camera** — real-time Vision push-up rep counting with live feedback
-- **Blocked gate (simulation)** — preview the intercept UX before Screen Time integration
-- **History & stats** — sessions, streaks, totals via Core Data
-- **Paywall** — $6.99/mo · $49/yr subscriptions (StoreKit 2)
-- **Widget** — home screen streak display
-- **Notifications** — daily workout reminders
+| Feature | Status |
+|---------|--------|
+| Onboarding + blocked app picker | ✅ |
+| Vision push-up rep counting | ✅ |
+| Vision squat rep counting | ✅ |
+| Vision plank hold timer | ✅ |
+| Streak + session history (Core Data) | ✅ |
+| 15-min scroll unlock windows | ✅ |
+| Blocked app gate simulation | ✅ |
+| StoreKit 2 paywall ($6.99/mo · $49/yr) | ✅ |
+| Streak widget | ✅ |
+| Daily reminder notifications | ✅ |
+| Weekly activity chart | ✅ |
+| Camera permission handling | ✅ |
+| App icon | ✅ |
 
-## Requirements
+## Open in Xcode
 
-- Xcode 16+
-- iOS 18+ device or simulator (camera features need a physical device)
-- Apple Developer account for subscriptions & App Groups
+1. Clone: `git clone https://github.com/THFC-COYS/RepScroll.git`
+2. Open `RepScroll.xcodeproj`
+3. Set **Development Team** on `RepScroll` + `RepScrollWidget` targets
+4. Add App Group `group.com.repscroll.shared` to both targets
+5. Run on a **physical iPhone** (camera/Vision needs real device)
 
-## Open & Run
-
-1. Clone the repo
-2. Open `RepScroll.xcodeproj` in Xcode
-3. Set your **Development Team** on both targets (RepScroll + RepScrollWidget)
-4. Enable App Group `group.com.repscroll.shared` in Signing & Capabilities
-5. Select a physical iPhone → **Run** (⌘R)
-
-StoreKit testing uses `Products.storekit` — configured in the scheme's Run action.
+StoreKit testing: scheme uses `Products.storekit`.
 
 ## Architecture
 
 ```
 RepScroll/
-├── App/              # Entry, global state, routing
-├── Models/           # ExerciseType, BlockedApp, DTOs
-├── ViewModels/       # MVVM layer
-├── Views/            # SwiftUI screens + components
-├── Services/         # Camera, Vision, StoreKit, notifications, blocking
-├── CoreData/         # Persistence + WorkoutSessionEntity
-└── Utilities/        # Theme, widget data bridge
+├── App/           Entry, routing, global state
+├── Models/        ExerciseType, BlockedApp, DTOs
+├── ViewModels/    ChallengeViewModel, HomeViewModel
+├── Views/         Onboarding, Home, Challenge, Gate, History, Paywall, Settings
+├── Services/      Camera, Vision pose engine, unlocks, StoreKit, notifications
+├── CoreData/      WorkoutSessionEntity persistence
+└── Utilities/     Theme, widget data bridge
 ```
 
-## Pose detection (push-ups)
+## Pose detection
 
-`PoseDetectionService` uses `VNDetectHumanBodyPoseRequest` to track shoulder/elbow/wrist joints. Reps count on down→up transitions when elbow angle crosses configurable thresholds. All processing stays on-device.
+`PoseDetectionService` runs `VNDetectHumanBodyPoseRequest` entirely on-device:
 
-## Blocked apps (roadmap)
+- **Push-ups** — elbow angle down/up transitions with rep cooldown
+- **Squats** — hip/knee/ankle angle tracking
+- **Plank** — shoulder/hip/ankle alignment; timer runs while form holds
 
-Current build **simulates** the gate from Home → tap a blocked app. Production path:
+## Blocked apps (v1.1 roadmap)
 
-1. `FamilyControls` entitlement
-2. `ManagedSettings` shield configuration
-3. `DeviceActivityMonitor` extension
-4. Deep link into challenge flow via App Groups
-
-See `BlockedAppsService.swift` for expansion notes.
+MVP simulates the gate from Home. Production adds `FamilyControls` + `ManagedSettings` + `DeviceActivityMonitor` extension.
 
 ## Subscriptions
 
@@ -66,14 +64,14 @@ See `BlockedAppsService.swift` for expansion notes.
 | `com.repscroll.premium.monthly` | $6.99/mo |
 | `com.repscroll.premium.yearly` | $49/yr |
 
-Create matching products in App Store Connect before release.
+Premium: 30-minute unlock windows + unlimited daily gates.
+
+## Regenerate app icon
+
+```bash
+python3 scripts/generate_app_icon.py
+```
 
 ## Privacy
 
-- Camera frames processed on-device only
-- No pose data uploaded
-- Apple Privacy Manifest included (`PrivacyInfo.xcprivacy`)
-
-## License
-
-Proprietary — all rights reserved.
+Camera frames never leave the device. Apple Privacy Manifest included.

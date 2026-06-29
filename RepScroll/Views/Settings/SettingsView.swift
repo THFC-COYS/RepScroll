@@ -5,6 +5,7 @@ struct SettingsView: View {
     @EnvironmentObject private var subscriptionService: SubscriptionService
     @EnvironmentObject private var notificationService: NotificationService
     @StateObject private var blockedApps = BlockedAppsService()
+    @AppStorage("unlockMinutes") private var unlockMinutes = 15
 
     var body: some View {
         NavigationStack {
@@ -21,6 +22,10 @@ struct SettingsView: View {
                     Button("Restore purchases") {
                         Task { await subscriptionService.restorePurchases() }
                     }
+                }
+
+                Section("Unlock window") {
+                    Stepper("Minutes per unlock: \(unlockMinutes)", value: $unlockMinutes, in: 5...60, step: 5)
                 }
 
                 Section("Daily goal") {

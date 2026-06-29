@@ -29,14 +29,16 @@ enum ExerciseType: String, CaseIterable, Codable, Identifiable {
         case .pushUp:
             "Place your phone on the floor facing you. Keep your full body in frame. Lower until elbows bend past 90°, then push up."
         case .squat:
-            "Stand back from the camera. Squat until thighs are parallel, then stand. Vision counting coming soon — tap to count for now."
+            "Stand 6 feet back, full body in frame. Squat until thighs are parallel — Vision counts each rep."
         case .plank:
-            "Hold a straight plank. Timer tracks your hold. Keep shoulders, hips, and ankles aligned."
+            "Side plank or front plank — keep shoulders, hips, and ankles in a straight line. Timer runs while form is solid."
         }
     }
 
     var supportsVisionCounting: Bool {
-        self == .pushUp
+        switch self {
+        case .pushUp, .squat, .plank: true
+        }
     }
 
     var defaultGoal: Int {

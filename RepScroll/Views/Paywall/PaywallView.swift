@@ -12,6 +12,19 @@ struct PaywallView: View {
         ZStack {
             RepScrollTheme.background.ignoresSafeArea()
 
+            VStack {
+                HStack {
+                    Spacer()
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(RepScrollTheme.textSecondary)
+                    }
+                }
+                .padding()
+                Spacer()
+            }
+
             ScrollView {
                 VStack(spacing: 24) {
                     header

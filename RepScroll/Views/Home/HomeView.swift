@@ -2,10 +2,11 @@ import SwiftUI
 import CoreData
 
 struct HomeView: View {
-    @Environment(\.managedObjectContext) private var context
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var subscriptionService: SubscriptionService
+    @EnvironmentObject private var unlockService: ScrollUnlockService
     @StateObject private var viewModel: HomeViewModel
+    @State private var tick = Date()
 
     init() {
         _viewModel = StateObject(wrappedValue: HomeViewModel(context: PersistenceController.shared.container.viewContext))
@@ -17,6 +18,7 @@ struct HomeView: View {
                 VStack(spacing: 20) {
                     header
                     streakCard
+                    UnlockStatusCard(unlockService: unlockService, blockedApps: viewModel.blockedAppsService.activeBlockedApps)
                     quickStart
                     blockedAppsSection
                     premiumBanner
@@ -26,6 +28,10 @@ struct HomeView: View {
             .background(RepScrollTheme.background)
             .navigationTitle("RepScroll")
             .onAppear { viewModel.refresh() }
+            .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+                tick = Date()
+                unlockService.pruneExpired()
+            }
         }
     }
 
@@ -35,7 +41,7 @@ struct HomeView: View {
                 Text(greeting)
                     .font(.title2.weight(.bold))
                     .foregroundStyle(RepScrollTheme.textPrimary)
-                Text("Earn your scroll time.")
+                Text(motivationalLine)
                     .font(.subheadline)
                     .foregroundStyle(RepScrollTheme.textSecondary)
             }
@@ -74,16 +80,15 @@ struct HomeView: View {
                 .font(.headline)
                 .foregroundStyle(RepScrollTheme.textPrimary)
 
-            Button {
-                appState.selectedTab = .challenge
-            } label: {
+            Button { appState.selectedTab = .challenge } label: {
                 HStack {
                     Image(systemName: appState.preferredExercise.icon)
                         .font(.title2)
+                        .foregroundStyle(RepScrollTheme.accent)
                     VStack(alignment: .leading) {
-                        Text("\(appState.dailyRepGoal) \(appState.preferredExercise.displayName)")
+                        Text(goalLabel)
                             .font(.headline)
-                        Text("Tap to start camera")
+                        Text("AI rep counting · on-device")
                             .font(.caption)
                             .foregroundStyle(RepScrollTheme.textSecondary)
                     }
@@ -101,28 +106,37 @@ struct HomeView: View {
 
     private var blockedAppsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Blocked apps (simulation)")
+            Text("Protected apps")
                 .font(.headline)
                 .foregroundStyle(RepScrollTheme.textPrimary)
-            Text("Tap to preview the gate screen. Full Screen Time integration ships in v1.1.")
+            Text("Tap to simulate opening a blocked app — you'll need reps first.")
                 .font(.caption)
                 .foregroundStyle(RepScrollTheme.textSecondary)
 
             ForEach(viewModel.blockedAppsService.activeBlockedApps) { app in
-                Button {
-                    appState.simulateBlockedAppLaunch(app)
-                } label: {
+                Button { appState.launchBlockedApp(app) } label: {
                     HStack(spacing: 14) {
                         Image(systemName: app.iconSystemName)
                             .font(.title2)
                             .foregroundStyle(Color(hex: app.accentHex))
                             .frame(width: 36)
-                        Text("Open \(app.name)")
-                            .font(.subheadline.weight(.medium))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(app.name)
+                                .font(.subheadline.weight(.medium))
+                            if unlockService.isUnlocked(appId: app.id) {
+                                Text("Unlocked · \(unlockService.formattedRemaining(for: app.id))")
+                                    .font(.caption)
+                                    .foregroundStyle(RepScrollTheme.success)
+                            } else {
+                                Text("Locked — reps required")
+                                    .font(.caption)
+                                    .foregroundStyle(RepScrollTheme.textSecondary)
+                            }
+                        }
                         Spacer()
-                        Image(systemName: "lock.fill")
+                        Image(systemName: unlockService.isUnlocked(appId: app.id) ? "lock.open.fill" : "lock.fill")
                             .font(.caption)
-                            .foregroundStyle(RepScrollTheme.textSecondary)
+                            .foregroundStyle(unlockService.isUnlocked(appId: app.id) ? RepScrollTheme.success : RepScrollTheme.textSecondary)
                     }
                     .foregroundStyle(RepScrollTheme.textPrimary)
                     .padding(.vertical, 8)
@@ -135,14 +149,12 @@ struct HomeView: View {
     private var premiumBanner: some View {
         Group {
             if !subscriptionService.isPremium {
-                Button {
-                    appState.showPaywall = true
-                } label: {
+                Button { appState.showPaywall = true } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Go Premium")
                                 .font(.headline)
-                            Text("Unlimited gates · All exercises · Widgets")
+                            Text("Unlimited gates · longer unlock windows")
                                 .font(.caption)
                                 .foregroundStyle(RepScrollTheme.textSecondary)
                         }
@@ -157,14 +169,17 @@ struct HomeView: View {
         }
     }
 
+    private var goalLabel: String {
+        if appState.preferredExercise == .plank {
+            return "\(appState.dailyRepGoal)s \(appState.preferredExercise.displayName)"
+        }
+        return "\(appState.dailyRepGoal) \(appState.preferredExercise.displayName)"
+    }
+
     private func statPill(value: String, label: String) -> some View {
         VStack(spacing: 2) {
-            Text(value)
-                .font(.title3.weight(.bold))
-                .foregroundStyle(RepScrollTheme.textPrimary)
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(RepScrollTheme.textSecondary)
+            Text(value).font(.title3.weight(.bold)).foregroundStyle(RepScrollTheme.textPrimary)
+            Text(label).font(.caption2).foregroundStyle(RepScrollTheme.textSecondary)
         }
     }
 
@@ -175,5 +190,15 @@ struct HomeView: View {
         case 12..<17: return "Good afternoon"
         default: return "Good evening"
         }
+    }
+
+    private var motivationalLine: String {
+        if viewModel.repository.stats.currentStreak >= 7 {
+            return "🔥 \(viewModel.repository.stats.currentStreak)-day streak — don't break it."
+        }
+        if viewModel.repository.stats.todayReps >= appState.dailyRepGoal {
+            return "Daily goal crushed. Earn more scroll time?"
+        }
+        return "Reps before scroll. Every time."
     }
 }

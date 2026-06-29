@@ -3,28 +3,34 @@ import SwiftUI
 struct OnboardingView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var notificationService: NotificationService
+    @StateObject private var blockedApps = BlockedAppsService()
     @State private var page = 0
 
     private let pages: [OnboardingPage] = [
         OnboardingPage(
             icon: "hand.raised.fill",
             title: "Scroll less.\nMove more.",
-            subtitle: "RepScroll blocks the doomscroll trap. Do a quick burst of exercise before social apps open."
+            subtitle: "RepScroll puts a wall between you and the feed. Move your body first — scroll second."
         ),
         OnboardingPage(
             icon: "camera.viewfinder",
-            title: "Camera counts\nyour reps",
-            subtitle: "Vision AI tracks push-ups in real time. No cheating — your body stays in frame."
+            title: "AI counts\nyour reps",
+            subtitle: "Push-ups, squats, plank — Vision tracks form on-device. Nothing leaves your phone."
         ),
         OnboardingPage(
             icon: "flame.fill",
             title: "Build a streak",
-            subtitle: "Log daily sessions, earn your scroll time, and watch your streak grow."
+            subtitle: "Daily sessions stack. The ring fills. The streak grows. You win."
+        ),
+        OnboardingPage(
+            icon: "lock.shield.fill",
+            title: "Pick your\ntemptations",
+            subtitle: "Choose which apps need reps before they open. Start with your worst offenders."
         ),
         OnboardingPage(
             icon: "bell.badge.fill",
-            title: "Daily nudge",
-            subtitle: "Optional morning reminder to knock out reps before the feed pulls you in."
+            title: "Morning nudge",
+            subtitle: "Optional reminder before the algorithm gets you."
         ),
     ]
 
@@ -35,8 +41,11 @@ struct OnboardingView: View {
             VStack(spacing: 0) {
                 TabView(selection: $page) {
                     ForEach(Array(pages.enumerated()), id: \.offset) { index, item in
-                        onboardingPage(item)
-                            .tag(index)
+                        if index == 3 {
+                            blockedAppsPage.tag(index)
+                        } else {
+                            onboardingPage(item).tag(index)
+                        }
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .always))
@@ -50,32 +59,58 @@ struct OnboardingView: View {
     private func onboardingPage(_ item: OnboardingPage) -> some View {
         VStack(spacing: 28) {
             Spacer()
-
-            ZStack {
-                Circle()
-                    .fill(RepScrollTheme.heroGradient.opacity(0.25))
-                    .frame(width: 140, height: 140)
-                    .blur(radius: 30)
-                Image(systemName: item.icon)
-                    .font(.system(size: 56))
-                    .foregroundStyle(RepScrollTheme.heroGradient)
-            }
-
+            heroIcon(item.icon)
             Text(item.title)
                 .font(.system(size: 34, weight: .bold, design: .rounded))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(RepScrollTheme.textPrimary)
-
             Text(item.subtitle)
                 .font(.body)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(RepScrollTheme.textSecondary)
                 .padding(.horizontal, 32)
-
             Spacer()
             Spacer()
         }
         .padding()
+    }
+
+    private var blockedAppsPage: some View {
+        VStack(spacing: 20) {
+            Spacer()
+            heroIcon("lock.shield.fill")
+            Text("Block these apps")
+                .font(.title.weight(.bold))
+                .foregroundStyle(RepScrollTheme.textPrimary)
+
+            VStack(spacing: 8) {
+                ForEach(blockedApps.allApps) { app in
+                    Toggle(isOn: Binding(
+                        get: { blockedApps.enabledApps.contains(app.id) },
+                        set: { _ in blockedApps.toggle(app) }
+                    )) {
+                        Label(app.name, systemImage: app.iconSystemName)
+                    }
+                    .tint(RepScrollTheme.accent)
+                }
+            }
+            .repScrollCard()
+            .padding(.horizontal, 24)
+
+            Spacer()
+        }
+    }
+
+    private func heroIcon(_ name: String) -> some View {
+        ZStack {
+            Circle()
+                .fill(RepScrollTheme.heroGradient.opacity(0.25))
+                .frame(width: 140, height: 140)
+                .blur(radius: 30)
+            Image(systemName: name)
+                .font(.system(size: 56))
+                .foregroundStyle(RepScrollTheme.heroGradient)
+        }
     }
 
     private var bottomBar: some View {

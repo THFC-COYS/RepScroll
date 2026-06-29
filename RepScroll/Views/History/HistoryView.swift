@@ -14,6 +14,7 @@ struct HistoryView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     statsGrid
+                    WeeklyActivityChart(dailyReps: repository.dailyRepsLast7Days)
                     sessionList
                 }
                 .padding()

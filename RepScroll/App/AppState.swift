@@ -21,7 +21,7 @@ final class AppState: ObservableObject {
         set { preferredExerciseRaw = newValue.rawValue }
     }
 
-    func simulateBlockedAppLaunch(_ app: BlockedApp) {
+    func launchBlockedApp(_ app: BlockedApp) {
         pendingBlockedApp = app
         showBlockedGate = true
     }

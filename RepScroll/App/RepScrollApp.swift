@@ -7,6 +7,7 @@ struct RepScrollApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var subscriptionService = SubscriptionService()
     @StateObject private var notificationService = NotificationService()
+    @StateObject private var unlockService = ScrollUnlockService.shared
 
     let persistenceController = PersistenceController.shared
 
@@ -21,6 +22,7 @@ struct RepScrollApp: App {
                 .environmentObject(appState)
                 .environmentObject(subscriptionService)
                 .environmentObject(notificationService)
+                .environmentObject(unlockService)
                 .preferredColorScheme(.dark)
                 .task {
                     await subscriptionService.loadProducts()

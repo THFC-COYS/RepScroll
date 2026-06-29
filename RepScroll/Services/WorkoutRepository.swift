@@ -13,6 +13,7 @@ final class WorkoutRepository: ObservableObject {
         totalReps: 0, todayReps: 0, weeklySessions: 0
     )
     @Published private(set) var recentSessions: [WorkoutSummary] = []
+    @Published private(set) var dailyRepsLast7Days: [Date: Int] = [:]
 
     init(context: NSManagedObjectContext) {
         self.context = context
@@ -22,7 +23,26 @@ final class WorkoutRepository: ObservableObject {
     func refresh() {
         recentSessions = fetchRecent(limit: 50)
         stats = computeStats()
+        dailyRepsLast7Days = computeDailyReps(days: 7)
         WidgetDataStore.update(streak: stats.currentStreak, todayReps: stats.todayReps)
+    }
+
+    func computeDailyReps(days: Int) -> [Date: Int] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        var result: [Date: Int] = [:]
+
+        let request = WorkoutSessionEntity.fetchRequest()
+        let start = calendar.date(byAdding: .day, value: -(days - 1), to: today) ?? today
+        request.predicate = NSPredicate(format: "startedAt >= %@", start as NSDate)
+
+        guard let sessions = try? context.fetch(request) else { return result }
+        for session in sessions {
+            guard let startedAt = session.startedAt else { continue }
+            let day = calendar.startOfDay(for: startedAt)
+            result[day, default: 0] += Int(session.repsCompleted)
+        }
+        return result
     }
 
     @discardableResult

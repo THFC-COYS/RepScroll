@@ -1,8 +1,6 @@
 import SwiftUI
-import AVFoundation
 
 struct ChallengeView: View {
-    @Environment(\.managedObjectContext) private var context
     @EnvironmentObject private var appState: AppState
     @StateObject private var viewModel: ChallengeViewModel
 
@@ -10,7 +8,7 @@ struct ChallengeView: View {
         let ctx = PersistenceController.shared.container.viewContext
         _viewModel = StateObject(wrappedValue: ChallengeViewModel(
             context: ctx,
-            exercise: ExerciseType.pushUp,
+            exercise: .pushUp,
             repGoal: 10
         ))
     }
@@ -21,19 +19,20 @@ struct ChallengeView: View {
                 RepScrollTheme.background.ignoresSafeArea()
 
                 if viewModel.isSessionActive {
-                    activeSession
+                    if viewModel.cameraDenied {
+                        CameraPermissionView { Task { await viewModel.retryCamera() } }
+                    } else {
+                        activeSession
+                    }
                 } else {
                     setupView
                 }
 
-                if viewModel.showCompletion {
-                    completionOverlay
-                }
+                if viewModel.showCompletion { completionOverlay }
             }
             .navigationTitle("Challenge")
             .onAppear {
-                viewModel.exercise = appState.preferredExercise
-                viewModel.repGoal = appState.dailyRepGoal
+                viewModel.configure(exercise: appState.preferredExercise, repGoal: appState.dailyRepGoal)
             }
             .onDisappear { viewModel.cleanup() }
         }
@@ -46,9 +45,7 @@ struct ChallengeView: View {
                 goalStepper
                 instructionCard
 
-                Button {
-                    Task { await viewModel.startSession() }
-                } label: {
+                Button { Task { await viewModel.startSession() } } label: {
                     Label("Start challenge", systemImage: "play.fill")
                         .frame(maxWidth: .infinity)
                 }
@@ -67,9 +64,8 @@ struct ChallengeView: View {
             HStack(spacing: 10) {
                 ForEach(ExerciseType.allCases) { type in
                     Button {
-                        viewModel.exercise = type
+                        viewModel.configure(exercise: type, repGoal: type.defaultGoal)
                         appState.preferredExercise = type
-                        viewModel.repGoal = type.defaultGoal
                         appState.dailyRepGoal = type.defaultGoal
                     } label: {
                         VStack(spacing: 6) {
@@ -99,9 +95,12 @@ struct ChallengeView: View {
             Text(viewModel.exercise == .plank ? "Goal (seconds)" : "Goal (reps)")
                 .font(.headline)
                 .foregroundStyle(RepScrollTheme.textPrimary)
-            Stepper("\(viewModel.repGoal)", value: $viewModel.repGoal, in: 5...50, step: viewModel.exercise == .plank ? 15 : 5)
+            Stepper("\(viewModel.repGoal)", value: $viewModel.repGoal, in: 5...60, step: viewModel.exercise == .plank ? 15 : 5)
                 .foregroundStyle(RepScrollTheme.textPrimary)
-                .onChange(of: viewModel.repGoal) { _, v in appState.dailyRepGoal = v }
+                .onChange(of: viewModel.repGoal) { _, v in
+                    appState.dailyRepGoal = v
+                    viewModel.poseDetection.targetReps = v
+                }
         }
         .repScrollCard()
     }
@@ -120,22 +119,16 @@ struct ChallengeView: View {
 
     private var activeSession: some View {
         ZStack {
-            if viewModel.exercise.supportsVisionCounting {
-                CameraPreviewView(session: viewModel.camera.session)
-                    .ignoresSafeArea()
+            CameraPreviewView(session: viewModel.camera.session)
+                .ignoresSafeArea()
 
-                // Pose overlay guides
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .strokeBorder(
-                        viewModel.poseDetection.isBodyDetected ? RepScrollTheme.success : RepScrollTheme.accent,
-                        lineWidth: 3
-                    )
-                    .padding(40)
-                    .allowsHitTesting(false)
-            } else {
-                RepScrollTheme.surface.ignoresSafeArea()
-                manualExerciseView
-            }
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(
+                    viewModel.poseDetection.isBodyDetected ? RepScrollTheme.success : RepScrollTheme.accent,
+                    lineWidth: 3
+                )
+                .padding(40)
+                .allowsHitTesting(false)
 
             VStack {
                 sessionHUD
@@ -153,48 +146,29 @@ struct ChallengeView: View {
                 .textCase(.uppercase)
                 .foregroundStyle(RepScrollTheme.textSecondary)
 
-            if viewModel.exercise == .plank {
-                Text("\(viewModel.plankSeconds)s")
-                    .font(.system(size: 64, weight: .bold, design: .rounded))
-                    .foregroundStyle(RepScrollTheme.textPrimary)
-            } else {
-                Text("\(viewModel.currentReps)")
-                    .font(.system(size: 72, weight: .bold, design: .rounded))
-                    .foregroundStyle(RepScrollTheme.textPrimary)
-                    .contentTransition(.numericText())
-                    .animation(.spring, value: viewModel.currentReps)
-                Text("/ \(viewModel.repGoal) reps")
-                    .font(.title3)
-                    .foregroundStyle(RepScrollTheme.textSecondary)
-            }
+            Text("\(viewModel.currentReps)")
+                .font(.system(size: 72, weight: .bold, design: .rounded))
+                .foregroundStyle(RepScrollTheme.textPrimary)
+                .contentTransition(.numericText())
+                .animation(.spring, value: viewModel.currentReps)
+
+            Text(viewModel.exercise == .plank ? "/ \(viewModel.repGoal)s hold" : "/ \(viewModel.repGoal) reps")
+                .font(.title3)
+                .foregroundStyle(RepScrollTheme.textSecondary)
 
             ProgressView(value: viewModel.progress)
                 .tint(RepScrollTheme.accent)
                 .padding(.horizontal, 40)
 
-            if viewModel.exercise.supportsVisionCounting {
-                Text(viewModel.poseDetection.feedbackMessage)
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(RepScrollTheme.accentSecondary)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
-            }
+            Text(viewModel.poseDetection.feedbackMessage)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(RepScrollTheme.accentSecondary)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(.ultraThinMaterial)
+                .clipShape(Capsule())
         }
         .padding(.top, 8)
-    }
-
-    private var manualExerciseView: some View {
-        VStack(spacing: 24) {
-            Image(systemName: viewModel.exercise.icon)
-                .font(.system(size: 80))
-                .foregroundStyle(RepScrollTheme.heroGradient)
-            Text("\(viewModel.currentReps) / \(viewModel.repGoal)")
-                .font(.largeTitle.weight(.bold))
-            Button("Count rep") { viewModel.incrementManualRep() }
-                .buttonStyle(GlowButtonStyle())
-        }
     }
 
     private var sessionControls: some View {
@@ -208,10 +182,8 @@ struct ChallengeView: View {
             Spacer()
 
             if viewModel.isGoalMet {
-                Button("Finish") {
-                    viewModel.endSession()
-                }
-                .buttonStyle(GlowButtonStyle(color: RepScrollTheme.success))
+                Button("Finish") { viewModel.endSession() }
+                    .buttonStyle(GlowButtonStyle(color: RepScrollTheme.success))
             }
         }
         .padding(.bottom, 20)
