@@ -1,6 +1,6 @@
-# PushScroll
+# RepScroll
 
-**Exercise before you scroll.** PushScroll forces a quick burst of movement — push-ups, squats, or plank — before opening blocked social apps.
+**Exercise before you scroll.** RepScroll forces a quick burst of movement — push-ups, squats, or plank — before opening blocked social apps.
 
 Built with **SwiftUI**, **Swift 6**, **iOS 18+**, **Vision** pose detection, **Core Data**, and **StoreKit 2**.
 
@@ -24,9 +24,9 @@ Built with **SwiftUI**, **Swift 6**, **iOS 18+**, **Vision** pose detection, **C
 ## Open & Run
 
 1. Clone the repo
-2. Open `PushScroll.xcodeproj` in Xcode
-3. Set your **Development Team** on both targets (PushScroll + PushScrollWidget)
-4. Enable App Group `group.com.pushscroll.shared` in Signing & Capabilities
+2. Open `RepScroll.xcodeproj` in Xcode
+3. Set your **Development Team** on both targets (RepScroll + RepScrollWidget)
+4. Enable App Group `group.com.repscroll.shared` in Signing & Capabilities
 5. Select a physical iPhone → **Run** (⌘R)
 
 StoreKit testing uses `Products.storekit` — configured in the scheme's Run action.
@@ -34,7 +34,7 @@ StoreKit testing uses `Products.storekit` — configured in the scheme's Run act
 ## Architecture
 
 ```
-PushScroll/
+RepScroll/
 ├── App/              # Entry, global state, routing
 ├── Models/           # ExerciseType, BlockedApp, DTOs
 ├── ViewModels/       # MVVM layer
@@ -63,8 +63,8 @@ See `BlockedAppsService.swift` for expansion notes.
 
 | Product ID | Price |
 |---|---|
-| `com.pushscroll.premium.monthly` | $6.99/mo |
-| `com.pushscroll.premium.yearly` | $49/yr |
+| `com.repscroll.premium.monthly` | $6.99/mo |
+| `com.repscroll.premium.yearly` | $49/yr |
 
 Create matching products in App Store Connect before release.
 

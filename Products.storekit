@@ -1,5 +1,5 @@
 {
-  "identifier" : "PushScrollProducts",
+  "identifier" : "RepScrollProducts",
   "nonRenewingSubscriptions" : [],
   "products" : [],
   "settings" : {
@@ -10,11 +10,11 @@
   },
   "subscriptionGroups" : [
     {
-      "id" : "pushscroll_premium",
+      "id" : "repscroll_premium",
       "localizations" : [
         {
           "description" : "Unlock unlimited app gates and premium features",
-          "displayName" : "PushScroll Premium",
+          "displayName" : "RepScroll Premium",
           "locale" : "en_US"
         }
       ],
@@ -39,10 +39,10 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.pushscroll.premium.monthly",
+          "productID" : "com.repscroll.premium.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Monthly",
-          "subscriptionGroupID" : "pushscroll_premium",
+          "subscriptionGroupID" : "repscroll_premium",
           "type" : "RecurringSubscription"
         },
         {
@@ -60,10 +60,10 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.pushscroll.premium.yearly",
+          "productID" : "com.repscroll.premium.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Yearly",
-          "subscriptionGroupID" : "pushscroll_premium",
+          "subscriptionGroupID" : "repscroll_premium",
           "type" : "RecurringSubscription"
         }
       ]
