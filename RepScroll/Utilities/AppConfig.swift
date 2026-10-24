@@ -55,8 +55,8 @@ enum AppConfig {
     static let reminderBody = "10 reps before the scroll. Your streak is waiting."
 
     // URLs — GitHub Pages (enable Pages on repo, source: /docs)
-    static let privacyPolicyURL = "https://thfc-coys.github.io/RepScroll/privacy.html"
-    static let termsURL = "https://thfc-coys.github.io/RepScroll/terms.html"
+    static let privacyPolicyURL = "https://repscroll.vercel.app/privacy.html"
+    static let termsURL = "https://repscroll.vercel.app/terms.html"
     static let supportURL = "https://github.com/THFC-COYS/RepScroll/issues"
     static let supportEmail = "support@repscroll.app"
 }
