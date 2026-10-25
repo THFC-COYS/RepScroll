@@ -1,10 +1,13 @@
 import SwiftUI
+import FamilyControls
 
 struct OnboardingView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var notificationService: NotificationService
+    @EnvironmentObject private var screenTimeService: ScreenTimeService
     @StateObject private var blockedApps = BlockedAppsService()
     @State private var page = 0
+    @State private var showAppPicker = false
 
     private let pages: [OnboardingPage] = [
         OnboardingPage(
@@ -83,6 +86,73 @@ struct OnboardingView: View {
                 .font(.title.weight(.bold))
                 .foregroundStyle(RepScrollTheme.textPrimary)
 
+            if screenTimeService.isApproved {
+                approvedPickerContent
+            } else if screenTimeService.isDenied {
+                deniedPickerContent
+            } else {
+                authorizationPromptContent
+            }
+
+            Spacer()
+        }
+        .familyActivityPicker(isPresented: $showAppPicker, selection: $screenTimeService.selection)
+        .onAppear { screenTimeService.refreshAuthorizationStatus() }
+    }
+
+    /// Real blocking is on: the user picks the actual apps, categories, and
+    /// sites to shield with the system picker.
+    private var approvedPickerContent: some View {
+        VStack(spacing: 16) {
+            Text(screenTimeService.selectedCount > 0
+                 ? "\(screenTimeService.selectedCount) apps, categories, and sites are protected. They stay shielded until you earn an unlock."
+                 : "Pick the apps that need reps before they open. They stay shielded until you earn an unlock.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(RepScrollTheme.textSecondary)
+                .padding(.horizontal, 32)
+
+            Button("Choose protected apps") { showAppPicker = true }
+                .buttonStyle(GlowButtonStyle())
+                .padding(.horizontal, 24)
+        }
+    }
+
+    /// Authorization has not been asked yet: offer the real thing first,
+    /// with the preview list as the no-pressure fallback.
+    private var authorizationPromptContent: some View {
+        VStack(spacing: 16) {
+            Text("Let RepScroll shield these apps for real, using Screen Time. You pick the apps, and nothing about your usage is collected.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(RepScrollTheme.textSecondary)
+                .padding(.horizontal, 32)
+
+            Button("Enable Screen Time blocking") {
+                Task { await screenTimeService.requestAuthorization() }
+            }
+            .buttonStyle(GlowButtonStyle())
+            .padding(.horizontal, 24)
+
+            simulationPickerList(caption: "Or start with the preview list. You can turn on real blocking later in Settings.")
+        }
+    }
+
+    /// Denied: never a dead end. The simulation gate still runs.
+    private var deniedPickerContent: some View {
+        VStack(spacing: 16) {
+            Text("Screen Time access is off, so RepScroll runs in preview mode for now. Turn it on any time in Settings to block apps for real.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(RepScrollTheme.textSecondary)
+                .padding(.horizontal, 32)
+
+            simulationPickerList(caption: nil)
+        }
+    }
+
+    private func simulationPickerList(caption: String?) -> some View {
+        VStack(spacing: 12) {
             VStack(spacing: 8) {
                 ForEach(blockedApps.allApps) { app in
                     Toggle(isOn: Binding(
@@ -97,7 +167,13 @@ struct OnboardingView: View {
             .repScrollCard()
             .padding(.horizontal, 24)
 
-            Spacer()
+            if let caption {
+                Text(caption)
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(RepScrollTheme.textSecondary)
+                    .padding(.horizontal, 32)
+            }
         }
     }
 

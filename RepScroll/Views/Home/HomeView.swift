@@ -5,6 +5,7 @@ struct HomeView: View {
     @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var subscriptionService: SubscriptionService
     @EnvironmentObject private var unlockService: ScrollUnlockService
+    @EnvironmentObject private var screenTimeService: ScreenTimeService
     @StateObject private var viewModel: HomeViewModel
     @State private var tick = Date()
 
@@ -17,7 +18,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     header
-                    if AppConfig.screenTimeIntegration == .simulation { simulationBanner }
+                    if screenTimeService.isSimulationMode { simulationBanner }
                     if dailyGoalMet { dailyGoalBanner }
                     streakCard
                     ShareStreakButton(streak: viewModel.repository.stats.currentStreak, todayReps: viewModel.repository.stats.todayReps)
@@ -126,7 +127,9 @@ struct HomeView: View {
             Text("Protected apps")
                 .font(.headline)
                 .foregroundStyle(RepScrollTheme.textPrimary)
-            Text("Tap to simulate opening a blocked app — you'll need reps first.")
+            Text(screenTimeService.isSimulationMode
+                 ? "Tap to simulate opening a blocked app — you'll need reps first."
+                 : "These apps are shielded on your phone. Tap one to earn an unlock window.")
                 .font(.caption)
                 .foregroundStyle(RepScrollTheme.textSecondary)
 
@@ -213,7 +216,7 @@ struct HomeView: View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "info.circle.fill")
                 .foregroundStyle(RepScrollTheme.accentSecondary)
-            Text("v1.0 preview — tap a protected app below to try the gate flow. System-level blocking comes in v1.1.")
+            Text("Preview mode — tap a protected app below to try the gate flow. Turn on Screen Time blocking in Settings to shield apps for real.")
                 .font(.caption)
                 .foregroundStyle(RepScrollTheme.textSecondary)
         }

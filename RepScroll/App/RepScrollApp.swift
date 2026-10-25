@@ -8,6 +8,8 @@ struct RepScrollApp: App {
     @StateObject private var subscriptionService = SubscriptionService()
     @StateObject private var notificationService = NotificationService()
     @StateObject private var unlockService = ScrollUnlockService.shared
+    @StateObject private var screenTimeService = ScreenTimeService.shared
+    @Environment(\.scenePhase) private var scenePhase
 
     let persistenceController = PersistenceController.shared
 
@@ -31,10 +33,21 @@ struct RepScrollApp: App {
                 .environmentObject(subscriptionService)
                 .environmentObject(notificationService)
                 .environmentObject(unlockService)
+                .environmentObject(screenTimeService)
                 .preferredColorScheme(.dark)
                 .task {
                     await subscriptionService.loadProducts()
                     await subscriptionService.refreshEntitlements()
+                    // Reconcile shields at launch: if an unlock window
+                    // expired while the app was closed and the monitor
+                    // extension has not run yet, shields go back up here.
+                    screenTimeService.refreshAuthorizationStatus()
+                    ScreenTimeBridge.refreshShields()
+                }
+                .onChange(of: scenePhase) { _, phase in
+                    guard phase == .active else { return }
+                    screenTimeService.refreshAuthorizationStatus()
+                    ScreenTimeBridge.refreshShields()
                 }
                 .onOpenURL { url in
                     guard let dest = DeepLinkRouter.parse(url: url) else { return }
