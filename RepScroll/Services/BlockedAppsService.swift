@@ -1,15 +1,13 @@
 import Foundation
 import os
 
-/// Placeholder service for social-app blocking integration.
+/// The v1.0 placeholder app list, now backing simulation mode only.
 ///
-/// Production expansion path:
-/// 1. Request `com.apple.developer.family-controls` entitlement
-/// 2. Use `FamilyControls` + `ManagedSettings` to shield selected apps
-/// 3. Implement `DeviceActivityMonitor` extension to intercept launches
-/// 4. Deep-link into RepScroll challenge flow via App Groups
-///
-/// Current build simulates the gate UX for demo and TestFlight review.
+/// v1.1 shipped real blocking: ScreenTimeService owns the Screen Time
+/// authorization, the user picks real apps with FamilyActivityPicker, and
+/// ShieldManager applies ManagedSettings shields from that selection.
+/// This service remains for the simulation fallback (authorization not
+/// determined or denied) and as the in-app entry points on Home.
 @MainActor
 final class BlockedAppsService: ObservableObject {
     @Published var enabledApps: Set<String> {

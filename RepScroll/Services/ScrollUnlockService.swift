@@ -2,13 +2,20 @@ import Foundation
 import Combine
 
 /// Tracks temporary scroll access earned after completing exercise challenges.
+///
+/// Unlock expiries persist in the App Group suite (v1.1) so ShieldManager,
+/// running in the app or the monitor extension, can reconcile system
+/// shields against live unlock windows. Wiring to real blocking goes
+/// through ScreenTimeBridge and is a no-op in simulation mode.
 @MainActor
 final class ScrollUnlockService: ObservableObject {
     static let shared = ScrollUnlockService()
 
     @Published private(set) var activeUnlocks: [String: Date] = [:]
 
+    /// Must match ShieldManager.unlocksKey in the shared target code.
     private let storageKey = "scrollUnlocks.expiry"
+    private let defaults: UserDefaults = UserDefaults(suiteName: AppConfig.appGroupIdentifier) ?? .standard
     private let defaultMinutes = AppConfig.freeUnlockMinutes
 
     init() {
@@ -44,27 +51,38 @@ final class ScrollUnlockService: ObservableObject {
         let expiry = Date().addingTimeInterval(TimeInterval(duration * 60))
         activeUnlocks[appId] = expiry
         persist()
+        // Real mode: shields drop now; the monitor extension restores them
+        // when the latest open window ends.
+        if let latest = activeUnlocks.values.max() {
+            ScreenTimeBridge.handleUnlockGranted(expiresAt: latest)
+        }
     }
 
     func revoke(appId: String) {
         activeUnlocks.removeValue(forKey: appId)
         persist()
+        ScreenTimeBridge.handleUnlockRevoked()
     }
 
     func pruneExpired() {
         let now = Date()
         let before = activeUnlocks.count
         activeUnlocks = activeUnlocks.filter { $0.value > now }
-        if activeUnlocks.count != before { persist() }
+        if activeUnlocks.count != before {
+            persist()
+            // A window closed while the app was open: reconcile shields in
+            // case the DeviceActivity callback has not landed yet.
+            ScreenTimeBridge.refreshShields()
+        }
     }
 
     private func load() {
-        guard let raw = UserDefaults.standard.dictionary(forKey: storageKey) as? [String: TimeInterval] else { return }
+        guard let raw = defaults.dictionary(forKey: storageKey) as? [String: TimeInterval] else { return }
         activeUnlocks = raw.mapValues { Date(timeIntervalSince1970: $0) }
     }
 
     private func persist() {
         let raw = activeUnlocks.mapValues { $0.timeIntervalSince1970 }
-        UserDefaults.standard.set(raw, forKey: storageKey)
+        defaults.set(raw, forKey: storageKey)
     }
 }

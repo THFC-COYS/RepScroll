@@ -1,4 +1,5 @@
 import Foundation
+import FamilyControls
 
 // MARK: - Locked product decisions (MVP v1.0)
 // These are the canonical specs — no user choice required at launch.
@@ -41,7 +42,21 @@ enum AppConfig {
     // ⑥ Features: onboarding → home → challenge → gate → history
     static let defaultBlockedAppIDs: Set<String> = ["instagram", "tiktok", "x"]
     static let freeGateChallengesPerDay = 1
-    static let screenTimeIntegration: ScreenTimeMode = .simulation
+
+    /// Test/debug override for the Screen Time mode. Leave nil in
+    /// production: the mode is then decided at runtime.
+    static var screenTimeModeOverride: ScreenTimeMode?
+
+    /// v1.1 runtime decision: real FamilyControls blocking when the user
+    /// has approved Screen Time authorization, the v1.0 simulation in every
+    /// other state (not determined or denied), so the gate flow is never a
+    /// dead end.
+    static var screenTimeIntegration: ScreenTimeMode {
+        if let screenTimeModeOverride { return screenTimeModeOverride }
+        return AuthorizationCenter.shared.authorizationStatus == .approved
+            ? .familyControls
+            : .simulation
+    }
 
     // ⑦ Widget: streak + today reps, hourly refresh
     static let widgetRefreshIntervalHours = 1
